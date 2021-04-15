@@ -31,6 +31,12 @@ class SPrinterTest {
 		n.accept(printer);
 		assertTrue(printer.result().toString().equals("(  )"));
 
+		nodes = reader.parse(builder, "( \"Hello world\" )");
+		n = nodes.get(0);
+		printer = new SPrinter();
+		n.accept(printer);
+		assertTrue(printer.result().toString().equals("( \"Hello world\" )"));
+		
 		nodes = reader.parse(builder, "(X)");
 		n = nodes.get(0);
 		printer = new SPrinter();
