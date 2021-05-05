@@ -171,6 +171,21 @@ class SPrinterTest {
 		assertTrue(printer.result().toString().equals("( Y )"));
 		
 	}
+	
+	@Test
+	void test5() throws IOException {
+		SParser reader = new SParser();
+		SPrinter printer;
+		List<SNode> nodes;
+		SNode n;
+		
+		nodes = reader.parse("(a b | a + b)");
+		assertTrue(nodes.size() == 1);
+		printer = new SPrinter();
+		n = nodes.get(0);
+		n.accept(printer);
+		System.out.println(printer.result());
+	}
 
 	@Test
 	void testUtf8() throws IOException {
