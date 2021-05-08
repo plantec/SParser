@@ -3,9 +3,9 @@
 	(robi 
 		position: (10 10))
 	(robi 
-		name: "Robi 1") 
+		name: 'Robi 1') 
 	(robi 
-		tag: 'X ) 
+		tag: `X ) 
 	(robi 
 		color: (Color blue) )
 )

@@ -31,11 +31,11 @@ class SPrinterTest {
 		n.accept(printer);
 		assertTrue(printer.result().toString().equals("(  )"));
 
-		nodes = reader.parse(builder, "( \"Hello world\" )");
+		nodes = reader.parse(builder, "( 'Hello world' )");
 		n = nodes.get(0);
 		printer = new SPrinter();
 		n.accept(printer);
-		assertTrue(printer.result().toString().equals("( \"Hello world\" )"));
+		assertTrue(printer.result().toString().equals("( 'Hello world' )"));
 		
 		nodes = reader.parse(builder, "(X)");
 		n = nodes.get(0);
@@ -43,11 +43,11 @@ class SPrinterTest {
 		n.accept(printer);
 		assertTrue(printer.result().toString().equals("( X )"));
 
-		nodes = reader.parse(builder, "('X)");
+		nodes = reader.parse(builder, "(`X)");
 		n = nodes.get(0);
 		printer = new SPrinter();
 		n.accept(printer);
-		assertTrue(printer.result().toString().equals("( 'X )"));
+		assertTrue(printer.result().toString().equals("( `X )"));
 
 		nodes = reader.parse(builder, "( 	X  )");
 		n = nodes.get(0);
@@ -68,11 +68,11 @@ class SPrinterTest {
 		System.out.println(((ByteArrayOutputStream) printer.result()).toString());
 		assertTrue(printer.result().toString().equals("( X ( Y ) Z )"));
 
-		nodes = reader.parse(builder, "( X ''( 'Y ) Z )");
+		nodes = reader.parse(builder, "( X ``( `Y ) Z )");
 		n = nodes.get(0);
 		printer = new SPrinter();
 		n.accept(printer);
-		assertTrue(printer.result().toString().equals("( X ''( 'Y ) Z )"));
+		assertTrue(printer.result().toString().equals("( X ``( `Y ) Z )"));
 
 		nodes = reader.parse(builder, "( X = 1 ( Y  = X ) Z )");
 		n = nodes.get(0);
@@ -139,16 +139,16 @@ class SPrinterTest {
 		List<SNode> nodes;
 		SNode n;
 		
-		nodes = reader.parse("((set c (Console new))\n (c print \"Hello World\")\n"
-				+ "	((Console new) print \"il était une fois:\\n\\\"bla bla\\n\\\"\") \n" + ")");
+		nodes = reader.parse("((set c (Console new))\n (c print 'Hello World')\n"
+				+ "	((Console new) print 'il était une fois:\\n\\'bla bla\\n\\'') \n" + ")");
 		n = nodes.get(0);
 		printer = new SPrinter();
 		printer.withIndentation(true);
 		n.accept(printer);
 		System.out.println(((ByteArrayOutputStream) printer.result()).toString());
 		assertTrue(printer.result().toString()
-				.equals("( \n" + "  ( set c \n" + "    ( Console new ) ) \n" + "  ( c print \"Hello World\" ) \n"
-						+ "  ( \n" + "    ( Console new ) print \"il était une fois:\\n\\\"bla bla\\n\\\"\" ) )"));
+				.equals("( \n" + "  ( set c \n" + "    ( Console new ) ) \n" + "  ( c print 'Hello World' ) \n"
+						+ "  ( \n" + "    ( Console new ) print 'il était une fois:\\n\\'bla bla\\n\\'' ) )"));
 		
 	}
 	
@@ -225,6 +225,27 @@ class SPrinterTest {
 		n.accept(printer);
 		System.out.println(printer.result().toString());
 		assertTrue(printer.result().toString().equals("( robi := ( Rect new ) )"));
+	}
+	@Test
+	
+	void test6() throws IOException {
+		SParser reader = new SParser();
+		SPrinter printer;
+		List<SNode> nodes;
+		SNode n;
+				
+		nodes = reader.parse("{ space := [ Space new ] } ( robi := [ Rect new ] ) ");
+		assertTrue(nodes.size() == 2);
+		printer = new SPrinter();
+		n = nodes.get(0);
+		n.accept(printer);
+		System.out.println(printer.result().toString());
+		assertTrue(printer.result().toString().equals("{ space := [ Space new ] }"));
+		n = nodes.get(1);
+		printer = new SPrinter();
+		n.accept(printer);
+		System.out.println(printer.result().toString());
+		assertTrue(printer.result().toString().equals("( robi := [ Rect new ] )"));
 	}
 
 }

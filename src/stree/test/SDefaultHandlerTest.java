@@ -69,7 +69,7 @@ class SDefaultHandlerTest {
 		assertTrue(n2.size() == 3);
 		assertTrue(n2.get(0).parsedString().equals("c"));
 		assertTrue(n2.get(1).parsedString().equals("print"));
-		assertTrue(n2.get(2).parsedString().equals("\"Hello World\""));
+		assertTrue(n2.get(2).parsedString().equals("'Hello World'"));
 
 		SNode n3 = n.get(2);
 		assertTrue(n3.size() == 3);
@@ -79,7 +79,8 @@ class SDefaultHandlerTest {
 		assertTrue(n31.get(1).parsedString().equals("new"));
 
 		assertTrue(n3.get(1).parsedString().equals("print"));
-		assertTrue(n3.get(2).parsedString().equals("\"He said:\\n\\\"bla bla\\n\\\"\""));
+		System.out.println(n3.get(2).parsedString());
+		assertTrue(n3.get(2).parsedString().equals("'He said:\\n\\'bla bla\\n\\''"));
 	}
 
 	@Test
@@ -116,11 +117,11 @@ class SDefaultHandlerTest {
 		assertTrue(n.size() == 0);
 		assertTrue(n.parsedString().equals("A"));
 
-		nodes = reader.parse(" \"Hello world\" ");
+		nodes = reader.parse(" 'Hello world' ");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 0);
-		assertTrue(n.parsedString().equals("\"Hello world\""));
+		assertTrue(n.parsedString().equals("'Hello world'"));
 
 		nodes = reader.parse("( \\ )");
 		n = nodes.get(0);
@@ -140,31 +141,31 @@ class SDefaultHandlerTest {
 		assertTrue(n.size() == 1);
 		assertTrue(n.get(0).parsedString().equals("\\n"));
 
-		nodes = reader.parse("( \"\" )");
+		nodes = reader.parse("( '' )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
-		assertTrue(n.get(0).parsedString().equals("\"\""));
+		assertTrue(n.get(0).parsedString().equals("''"));
 
-		nodes = reader.parse("( \"\\\\\" )");
+		nodes = reader.parse("( '\\\\' )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
-		assertTrue(n.get(0).parsedString().equals("\"\\\\\""));
+		assertTrue(n.get(0).parsedString().equals("'\\\\'"));
 
-		nodes = reader.parse("( \"\\n\\\\\" )");
+		nodes = reader.parse("( '\\n\\\\' )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
-		assertTrue(n.get(0).parsedString().equals("\"\\n\\\\\""));
+		assertTrue(n.get(0).parsedString().equals("'\\n\\\\'"));
 
-		nodes = reader.parse("( \"\\\"\" )");
+		nodes = reader.parse("( '\\'' )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
-		assertTrue(n.get(0).parsedString().equals("\"\\\"\""));
+		assertTrue(n.get(0).parsedString().equals("'\\''"));
 
-		nodes = reader.parse("( '( ) )");
+		nodes = reader.parse("( `( ) )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
@@ -178,11 +179,11 @@ class SDefaultHandlerTest {
 		List<SNode> nodes;
 		SNode n;
 
-		nodes = reader.parse(builder, "( \"hello\" )");
+		nodes = reader.parse(builder, "( 'hello' )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
-		assertTrue(n.get(0).parsedString().equals("\"hello\""));
+		assertTrue(n.get(0).parsedString().equals("'hello'"));
 
 		nodes = reader.parse(builder, "( \\hello\\)");
 		n = nodes.get(0);
@@ -190,27 +191,27 @@ class SDefaultHandlerTest {
 		assertTrue(n.size() == 1);
 		assertTrue(n.get(0).parsedString().equals("\\hello\\"));
 
-		nodes = reader.parse(builder, "( \"\\X\\\"\" )");
+		nodes = reader.parse(builder, "( '\\X\\'' )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
-		assertTrue(n.get(0).parsedString().equals("\"\\X\\\"\""));
+		assertTrue(n.get(0).parsedString().equals("'\\X\\''"));
 
-		nodes = reader.parse(builder, "( \"Hello\\nworld\" \"Y\" )");
+		nodes = reader.parse(builder, "( 'Hello\\nworld' 'Y' )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 2);
 		assertFalse(n.isLeaf());
-		assertTrue(n.get(0).parsedString().equals("\"Hello\\nworld\""));
-		assertTrue(n.get(1).parsedString().equals("\"Y\""));
+		assertTrue(n.get(0).parsedString().equals("'Hello\\nworld'"));
+		assertTrue(n.get(1).parsedString().equals("'Y'"));
 
-		nodes = reader.parse(builder, "( \"\\\"Hello world\\\"\" \"Y\")");
+		nodes = reader.parse(builder, "( '\\'Hello world\\'' 'Y')");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 2);
 		assertFalse(n.isLeaf());
-		assertTrue(n.get(0).parsedString().equals("\"\\\"Hello world\\\"\""));
-		assertTrue(n.get(1).parsedString().equals("\"Y\""));
+		assertTrue(n.get(0).parsedString().equals("'\\'Hello world\\''"));
+		assertTrue(n.get(1).parsedString().equals("'Y'"));
 	}
 
 	@Test
@@ -220,14 +221,14 @@ class SDefaultHandlerTest {
 		List<SNode> nodes;
 		SNode n;
 
-		nodes = reader.parse(builder, "( 'A )");
+		nodes = reader.parse(builder, "( `A )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
 		assertTrue(n.get(0).parsedString().equals("A"));
 		assertTrue(n.get(0).quote() == 1);
 
-		nodes = reader.parse(builder, "( ''A )");
+		nodes = reader.parse(builder, "( ``A )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
@@ -241,7 +242,7 @@ class SDefaultHandlerTest {
 		assertTrue(n.quote() == 0);
 		assertTrue(n.get(0).parsedString().equals("A"));
 
-		nodes = reader.parse(builder, "( '( A ) )");
+		nodes = reader.parse(builder, "( `( A ) )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
@@ -249,7 +250,7 @@ class SDefaultHandlerTest {
 		assertTrue(n.get(0).get(0).parsedString().equals("A"));
 		assertTrue(n.get(0).quote() == 1);
 
-		nodes = reader.parse(builder, "( '''( 'A B C ) )");
+		nodes = reader.parse(builder, "( ```( `A B C ) )");
 		n = nodes.get(0);
 		assertTrue(n != null);
 		assertTrue(n.size() == 1);
@@ -304,7 +305,7 @@ class SDefaultHandlerTest {
 		SParser reader = new SParser();
 		SDefaultHandler builder = new SDefaultHandler();
 		try {
-			reader.parse(builder, "( \"not ended string )");
+			reader.parse(builder, "( 'not ended string )");
 			assertTrue(false);
 		} catch (SSyntaxError e) {
 			// e.printStackTrace();

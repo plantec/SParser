@@ -3,7 +3,9 @@ package stree.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 
 public class SParser {
@@ -12,22 +14,30 @@ public class SParser {
 	private SHandler handler;
 	private String pending;
 	private final Character[] whites = { ' ', '\r', '\n', '\t' };
+	private Deque<Character> closingStk;
 	private int line;
 	private int pos;
 	private int level;
 
 	public interface SNodeBuilder {
-		SNode newNode();
+		SNode newNode(int openChar);
+
 		SNode newLeaf(String contents);
 	}
 
 	public interface SHandler {
 		List<SNode> result();
+
 		void reset();
+
 		void leaf(String a);
-		void startNode();
+
+		void startNode(int openChar);
+
 		void endNode();
+
 		void comment(String c);
+
 		void quote();
 	}
 
@@ -57,10 +67,11 @@ public class SParser {
 	public List<SNode> parse(Reader input) throws IOException {
 		return this.parse(this.defaulHandler(), input);
 	}
-	
+
 	public List<SNode> parse(SHandler handler, Reader input) throws IOException {
 		this.input = input;
 		this.handler = handler;
+		this.closingStk = new ArrayDeque<>();
 		this.pending = "";
 		this.line = 1;
 		this.pos = 0;
@@ -68,6 +79,38 @@ public class SParser {
 		this.handler.reset();
 		this.parse();
 		return handler.result();
+	}
+
+	private void opening(int openChar) {
+		switch (openChar) {
+		case '(':
+			this.closingStk.push(')');
+			break;
+		case '{':
+			this.closingStk.push('}');
+			break;
+		case '[':
+			this.closingStk.push(']');
+			break;
+		}
+		this.flushPending();
+		this.level++;
+		this.handler.startNode(openChar);
+	}
+
+	private void closing(int closeChar) {
+		if (closingStk.isEmpty()) {
+			throw new SSyntaxError("too much closing: ", this.line, this.pos);
+		}
+		Character intended = closingStk.pop();
+		if (closeChar != intended) {
+			throw new SSyntaxError("bad closing, have '"+ (char) closeChar + "', intended '"+ intended + "'", this.line, this.pos);
+		}
+		this.flushPending();
+		this.level--;
+		if (this.level < 0)
+			throw new SSyntaxError("Too much closing", this.line, this.pos);
+		this.handler.endNode();
 	}
 
 	protected int parse() throws IOException {
@@ -82,11 +125,9 @@ public class SParser {
 				return n;
 
 			case ')':
-				this.flushPending();
-				this.level--;
-				if (this.level < 0)
-					throw new SSyntaxError("Too much closing", this.line, this.pos);
-				this.handler.endNode();
+			case ']':
+			case '}':
+				this.closing(n);
 				break;
 
 			case ';':
@@ -95,16 +136,16 @@ public class SParser {
 				break;
 
 			case '(':
-				this.flushPending();
-				this.level++;
-				this.handler.startNode();
-				break;
-
-			case '"':
-				this.readString();
+			case '[':
+			case '{':
+				this.opening(n);
 				break;
 
 			case '\'':
+				this.readString();
+				break;
+
+			case '`':
 				this.handler.quote();
 				break;
 
@@ -133,12 +174,12 @@ public class SParser {
 	}
 
 	protected void readString() throws IOException {
-		this.pending += ('"');
+		this.pending += ('\'');
 		int l = this.line;
 		int p = this.pos;
 		do {
 			int n = this.read();
-			if ((char) n == '"') {
+			if ((char) n == '\'') {
 				this.pending += ((char) n);
 				return;
 			}

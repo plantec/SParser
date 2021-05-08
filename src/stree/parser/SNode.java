@@ -3,6 +3,10 @@ package stree.parser;
 import java.util.List;
 
 public interface SNode {
+
+	public int openTag();
+	
+	public void setOpenTag(int openTag);
 	
 	public int quote();
 

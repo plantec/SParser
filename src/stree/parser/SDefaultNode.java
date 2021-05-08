@@ -9,6 +9,7 @@ public class SDefaultNode implements SNode {
 	private Integer quote;
 	private String parsedString;
 	private List<SNode> children;
+	private int openTag;
 	
 	protected List<SNode> newChildrenList() {
 		return new ArrayList<>();
@@ -21,6 +22,14 @@ public class SDefaultNode implements SNode {
 		this.quote = 0;
 	}
 
+	public int openTag() {
+		return openTag;
+	}
+	
+	public void setOpenTag(int openTag) {
+		this.openTag = openTag;
+	}
+	
 	public int quote() {
 		return this.quote;
 	}

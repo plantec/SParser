@@ -82,8 +82,8 @@ public class SPrinter implements SVisitor {
 			}
 		}		
 		for (int i = 0; i < node.quote(); i++)
-			this.write('\'');
-		this.write('(');
+			this.write('`');
+		this.write((char)node.openTag());
 		this.write(' ');
 		if (node.hasChildren()) {
 			this.level++;
@@ -91,13 +91,23 @@ public class SPrinter implements SVisitor {
 			this.level--;
 		}
 		this.write(' ');
-		this.write(')');
+		switch (node.openTag()) {
+		case '(':
+			this.write(')');
+			break;
+		case '{':
+			this.write('}');
+			break;
+		case '[':
+			this.write(']');
+			break;
+		}
 	}
 
 	@Override
 	public void visitLeaf(SNode node) {
 		for (int i = 0; i < node.quote(); i++)
-			this.write('\'');
+			this.write('`');
 		this.write(node.parsedString());
 	}
 

@@ -15,8 +15,10 @@ public class SDefaultHandler implements SParser.SHandler {
 
 	class SDefaultNodeBuilder implements SNodeBuilder {
 		@Override
-		public SNode newNode() {
-			return new SDefaultNode();
+		public SNode newNode(int openChar) {
+			SNode n = new SDefaultNode();
+			n.setOpenTag(openChar);
+			return n;
 		}
 
 		@Override
@@ -65,8 +67,8 @@ public class SDefaultHandler implements SParser.SHandler {
 		return node;
 	}
 
-	protected SNode newNode() {
-		return this.withQuote(this.nodeBuilder().newNode());
+	protected SNode newNode(int openChar) {
+		return this.withQuote(this.nodeBuilder().newNode(openChar));
 	}
 
 	protected SNode newLeaf(String contents) {
@@ -79,8 +81,8 @@ public class SDefaultHandler implements SParser.SHandler {
 	}
 
 	@Override
-	public void startNode() {
-		SNode node = this.newNode();
+	public void startNode(int openChar) {
+		SNode node = this.newNode(openChar);
 		this.storeNode(node);
 		this.top = node;
 	}

@@ -21,7 +21,7 @@ class SOtherHandlerTest {
 
 	class MySNodeBuilder implements SParser.SNodeBuilder {
 		@Override
-		public MySNode newNode() {
+		public MySNode newNode(int openChar) {
 			return new MySNode();
 		}
 
@@ -51,7 +51,7 @@ class SOtherHandlerTest {
 		assertTrue(n.get(0) instanceof MySNode);
 
 		builder.setNodeBuilder(new SParser.SNodeBuilder() {
-			public MySNode newNode() {
+			public MySNode newNode(int openChar) {
 				return new MySNode();
 			}
 
